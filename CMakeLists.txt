@@ -715,6 +715,7 @@ add_custom_target(git_commit ALL
 
 #LIBRARIES
 
+set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
 set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 
 # memprof - simple library for memory usage profiling
