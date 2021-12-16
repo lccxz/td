@@ -6,9 +6,7 @@ if (POLICY CMP0065)
   cmake_policy(SET CMP0065 NEW)
 endif()
 
-project(TDLib VERSION 1.7.9 LANGUAGES CXX C)
-
-set(CMAKE_CXX_STANDARD 14)
+project(TDLib VERSION 1.7.10 LANGUAGES CXX C)
 
 if (NOT DEFINED CMAKE_MODULE_PATH)
   set(CMAKE_MODULE_PATH "")
@@ -715,9 +713,6 @@ add_custom_target(git_commit ALL
 
 #LIBRARIES
 
-set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
-set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-
 # memprof - simple library for memory usage profiling
 add_library(memprof STATIC ${MEMPROF_SOURCE})
 target_include_directories(memprof PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
@@ -755,7 +750,7 @@ endif()
 add_library(tdcore STATIC ${TDLIB_SOURCE})
 target_include_directories(tdcore PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<BUILD_INTERFACE:${TL_TD_AUTO_INCLUDE_DIR}>)
 target_include_directories(tdcore SYSTEM PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(tdcore PUBLIC tdapi tdactor tdutils tdnet tddb PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} -static)
+target_link_libraries(tdcore PUBLIC tdapi tdactor tdutils tdnet tddb PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES})
 if (WIN32)
   if (MINGW)
     target_link_libraries(tdcore PRIVATE ws2_32 mswsock crypt32)
