@@ -40,7 +40,6 @@
 #include "td/telegram/MessageId.h"
 #include "td/telegram/MessageSearchFilter.h"
 #include "td/telegram/MessageSender.h"
-#include "td/telegram/MessagesManager.h"
 #include "td/telegram/misc.h"
 #include "td/telegram/net/DcId.h"
 #include "td/telegram/Payments.h"
@@ -449,7 +448,7 @@ class MessageChatSetTtl final : public MessageContent {
 
 class MessageUnsupported final : public MessageContent {
  public:
-  static constexpr int32 CURRENT_VERSION = 7;
+  static constexpr int32 CURRENT_VERSION = 8;
   int32 version = CURRENT_VERSION;
 
   MessageUnsupported() = default;
@@ -4111,7 +4110,8 @@ unique_ptr<MessageContent> get_message_content(Td *td, FormattedText message,
                                                tl_object_ptr<telegram_api::MessageMedia> &&media,
                                                DialogId owner_dialog_id, bool is_content_read, UserId via_bot_user_id,
                                                int32 *ttl, bool *disable_web_page_preview) {
-  if (!td->auth_manager_->was_authorized() && !G()->close_flag() && media != nullptr) {
+  if (!td->auth_manager_->was_authorized() && !G()->close_flag() && media != nullptr &&
+      media->get_id() != telegram_api::messageMediaEmpty::ID) {
     LOG(ERROR) << "Receive without authorization " << to_string(media);
     media = nullptr;
   }

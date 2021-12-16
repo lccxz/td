@@ -125,7 +125,7 @@ class Td final : public Actor {
   void set_is_bot_online(bool is_bot_online);
 
   template <class ActorT, class... ArgsT>
-  ActorId<ActorT> create_net_actor(ArgsT &&... args) {
+  ActorId<ActorT> create_net_actor(ArgsT &&...args) {
     LOG_CHECK(close_flag_ < 1) << close_flag_
 #if TD_CLANG || TD_GCC
                                << ' ' << __PRETTY_FUNCTION__
@@ -234,7 +234,7 @@ class Td final : public Actor {
   };
 
   template <class HandlerT, class... Args>
-  std::shared_ptr<HandlerT> create_handler(Args &&... args) {
+  std::shared_ptr<HandlerT> create_handler(Args &&...args) {
     LOG_CHECK(close_flag_ < 2) << close_flag_
 #if TD_CLANG || TD_GCC
                                << ' ' << __PRETTY_FUNCTION__
@@ -250,7 +250,7 @@ class Td final : public Actor {
   static td_api::object_ptr<td_api::Object> static_request(td_api::object_ptr<td_api::Function> function);
 
  private:
-  static constexpr const char *TDLIB_VERSION = "1.7.9";
+  static constexpr const char *TDLIB_VERSION = "1.7.10";
   static constexpr int64 ONLINE_ALARM_ID = 0;
   static constexpr int64 PING_SERVER_ALARM_ID = -1;
   static constexpr int32 PING_SERVER_TIMEOUT = 300;
@@ -480,6 +480,12 @@ class Td final : public Actor {
 
   void on_request(uint64 id, const td_api::terminateAllOtherSessions &request);
 
+  void on_request(uint64 id, const td_api::toggleSessionCanAcceptCalls &request);
+
+  void on_request(uint64 id, const td_api::toggleSessionCanAcceptSecretChats &request);
+
+  void on_request(uint64 id, const td_api::setInactiveSessionTtl &request);
+
   void on_request(uint64 id, const td_api::getConnectedWebsites &request);
 
   void on_request(uint64 id, const td_api::disconnectWebsite &request);
@@ -648,11 +654,15 @@ class Td final : public Actor {
 
   void on_request(uint64 id, const td_api::deleteMessages &request);
 
-  void on_request(uint64 id, const td_api::deleteChatMessagesFromUser &request);
+  void on_request(uint64 id, const td_api::deleteChatMessagesBySender &request);
 
   void on_request(uint64 id, const td_api::deleteChatMessagesByDate &request);
 
   void on_request(uint64 id, const td_api::readAllChatMentions &request);
+
+  void on_request(uint64 id, const td_api::getChatAvailableMessageSenders &request);
+
+  void on_request(uint64 id, const td_api::setChatDefaultMessageSender &request);
 
   void on_request(uint64 id, td_api::sendMessage &request);
 
@@ -818,6 +828,8 @@ class Td final : public Actor {
 
   void on_request(uint64 id, td_api::setChatDraftMessage &request);
 
+  void on_request(uint64 id, const td_api::toggleChatHasProtectedContent &request);
+
   void on_request(uint64 id, const td_api::toggleChatIsPinned &request);
 
   void on_request(uint64 id, const td_api::toggleChatIsMarkedAsUnread &request);
@@ -882,9 +894,9 @@ class Td final : public Actor {
 
   void on_request(uint64 id, td_api::getChatJoinRequests &request);
 
-  void on_request(uint64 id, const td_api::approveChatJoinRequest &request);
+  void on_request(uint64 id, const td_api::processChatJoinRequest &request);
 
-  void on_request(uint64 id, const td_api::declineChatJoinRequest &request);
+  void on_request(uint64 id, td_api::processChatJoinRequests &request);
 
   void on_request(uint64 id, td_api::revokeChatInviteLink &request);
 
