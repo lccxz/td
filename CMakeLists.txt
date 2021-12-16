@@ -715,6 +715,8 @@ add_custom_target(git_commit ALL
 
 #LIBRARIES
 
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+
 # memprof - simple library for memory usage profiling
 add_library(memprof STATIC ${MEMPROF_SOURCE})
 target_include_directories(memprof PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
