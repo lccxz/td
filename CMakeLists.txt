@@ -746,11 +746,15 @@ if (NOT CMAKE_CROSSCOMPILING)
   add_dependencies(tdapi tl_generate_common)
 endif()
 
+if (WITH_STATIC)
+  set(STATIC_LIBRARIES_FLAG "-static")
+endif()
+
 # tdcore - mostly internal TDLib interface. One should use tdactor for interactions with it.
 add_library(tdcore STATIC ${TDLIB_SOURCE})
 target_include_directories(tdcore PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<BUILD_INTERFACE:${TL_TD_AUTO_INCLUDE_DIR}>)
 target_include_directories(tdcore SYSTEM PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(tdcore PUBLIC tdapi tdactor tdutils tdnet tddb PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} -static)
+target_link_libraries(tdcore PUBLIC tdapi tdactor tdutils tdnet tddb PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES_FLAG})
 if (WIN32)
   if (MINGW)
     target_link_libraries(tdcore PRIVATE ws2_32 mswsock crypt32)
