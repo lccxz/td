@@ -24,6 +24,12 @@ if (ZLIB_FOUND)
   endif()
 endif()
 
+if (WITH_STATIC)
+  string(REPLACE ".so" ".a" ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+  set(STATIC_LIBRARIES_FLAG "-static")
+endif()
+
 if (CRC32C_FOUND)
   set(TD_HAVE_CRC32C 1)
 endif()
@@ -330,7 +336,7 @@ endif()
 target_include_directories(tdutils PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 if (OPENSSL_FOUND)
-  target_link_libraries(tdutils PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES})
+  target_link_libraries(tdutils PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES_FLAG})
   target_include_directories(tdutils SYSTEM PRIVATE ${OPENSSL_INCLUDE_DIR})
 
   if (WIN32)

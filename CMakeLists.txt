@@ -46,8 +46,6 @@ if (TD_ENABLE_DOTNET AND (CMAKE_VERSION VERSION_LESS "3.1.0"))
   message(FATAL_ERROR "CMake 3.1.0 or higher is required. You are running version ${CMAKE_VERSION}.")
 endif()
 
-enable_testing()
-
 if (POLICY CMP0069)
   option(TD_ENABLE_LTO "Use \"ON\" to enable Link Time Optimization.")
 
@@ -185,6 +183,12 @@ if (NOT ZLIB_FOUND)
   return()
 endif()
 
+if (WITH_STATIC)
+  string(REPLACE ".so" ".a" ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+  set(STATIC_LIBRARIES_FLAG "-static")
+endif()
+
 if (NOT TDUTILS_MIME_TYPE)
   message(WARNING "Option TDUTILS_MIME_TYPE must not be disabled: stop TDLib building")
   return()
@@ -197,8 +201,6 @@ add_subdirectory(tdnet)
 add_subdirectory(sqlite)
 
 add_subdirectory(tddb)
-
-add_subdirectory(test)
 
 get_directory_property(HAS_PARENT PARENT_DIRECTORY)
 if (HAS_PARENT)
@@ -739,12 +741,6 @@ endif()
 
 if (NOT CMAKE_CROSSCOMPILING)
   add_dependencies(tdapi tl_generate_common)
-endif()
-
-if (WITH_STATIC)
-  string(REPLACE ".so" ".a" ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
-  message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
-  set(STATIC_LIBRARIES_FLAG "-static")
 endif()
 
 # tdcore - mostly internal TDLib interface. One should use tdactor for interactions with it.

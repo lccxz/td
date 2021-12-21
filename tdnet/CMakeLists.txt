@@ -11,6 +11,12 @@ if (NOT OPENSSL_FOUND)
   find_package(ZLIB REQUIRED)
 endif()
 
+if (WITH_STATIC)
+  string(REPLACE ".so" ".a" ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+  set(STATIC_LIBRARIES_FLAG "-static")
+endif()
+
 #SOURCE SETS
 set(TDNET_SOURCE
   td/net/GetHostByNameActor.cpp
@@ -67,7 +73,7 @@ target_link_libraries(tdnet PUBLIC tdutils tdactor)
 if (NOT EMSCRIPTEN)
   target_link_libraries(tdnet PRIVATE ${OPENSSL_SSL_LIBRARY})
 endif()
-target_link_libraries(tdnet PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES})
+target_link_libraries(tdnet PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES_FLAG})
 
 if (WIN32)
   if (MINGW)

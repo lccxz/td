@@ -11,6 +11,12 @@ if (NOT OPENSSL_FOUND)
   find_package(ZLIB REQUIRED)
 endif()
 
+if (WITH_STATIC)
+  string(REPLACE ".so" ".a" ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+  set(STATIC_LIBRARIES_FLAG "-static")
+endif()
+
 set(SQLITE_SOURCE
   sqlite/sqlite3.c
 
@@ -22,7 +28,7 @@ set(SQLITE_SOURCE
 add_library(tdsqlite STATIC ${SQLITE_SOURCE})
 target_include_directories(tdsqlite PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_include_directories(tdsqlite SYSTEM PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(tdsqlite PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES})
+target_link_libraries(tdsqlite PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES_FLAG})
 if (WIN32)
   if (MINGW)
     target_link_libraries(tdsqlite PRIVATE ws2_32 mswsock crypt32)
