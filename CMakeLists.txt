@@ -742,6 +742,8 @@ if (NOT CMAKE_CROSSCOMPILING)
 endif()
 
 if (WITH_STATIC)
+  string(REPLACE ".so" ".a" ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
   set(STATIC_LIBRARIES_FLAG "-static")
 endif()
 
