@@ -200,11 +200,6 @@ add_subdirectory(tddb)
 
 add_subdirectory(test)
 
-if (NOT CMAKE_CROSSCOMPILING)
-  add_subdirectory(benchmark)
-endif()
-
-
 get_directory_property(HAS_PARENT PARENT_DIRECTORY)
 if (HAS_PARENT)
   set(TL_TD_JSON_AUTO ${TL_TD_JSON_AUTO_SOURCE} PARENT_SCOPE) # used in tdbot
@@ -753,7 +748,6 @@ endif()
 # tdcore - mostly internal TDLib interface. One should use tdactor for interactions with it.
 add_library(tdcore STATIC ${TDLIB_SOURCE})
 target_include_directories(tdcore PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> $<BUILD_INTERFACE:${TL_TD_AUTO_INCLUDE_DIR}>)
-target_include_directories(tdcore SYSTEM PRIVATE ${OPENSSL_INCLUDE_DIR})
 target_link_libraries(tdcore PUBLIC tdapi tdactor tdutils tdnet tddb PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} ${ZLIB_LIBRARIES} ${STATIC_LIBRARIES_FLAG})
 if (WIN32)
   if (MINGW)
@@ -869,13 +863,6 @@ add_library(Td::TdStatic ALIAS TdStatic)
 add_library(Td::TdJson ALIAS TdJson)
 add_library(Td::TdJsonStatic ALIAS TdJsonStatic)
 
-install(TARGETS tdjson TdJson tdjson_static TdJsonStatic tdjson_private tdclient tdcore tdapi TdStatic EXPORT TdTargets
-  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-  INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
-
 # generate pkg-config files
 include(GeneratePkgConfig)
 
@@ -898,33 +885,11 @@ generate_pkgconfig(tdjson_private "Telegram Library - JSON interface (private)")
 generate_pkgconfig(tdjson "Telegram Library - JSON interface (shared)")
 generate_pkgconfig(tdjson_static "Telegram Library - JSON interface (static)")
 
-install(EXPORT TdTargets
-  FILE TdTargets.cmake
-  NAMESPACE Td::
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Td"
-)
-
-# Install tdjson/tdjson_static:
-install(FILES ${TD_JSON_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/td/telegram/tdjson_export.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/td/telegram")
-# Install tdclient:
-install(FILES td/telegram/Client.h td/telegram/Log.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/td/telegram")
-# Install tdapi:
-install(FILES td/tl/TlObject.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/td/tl")
-install(FILES "${TL_TD_AUTO_INCLUDE_DIR}/td/telegram/td_api.h" "${TL_TD_AUTO_INCLUDE_DIR}/td/telegram/td_api.hpp" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/td/telegram")
-if (TD_ENABLE_JNI)
-  install(FILES td/tl/tl_jni_object.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/td/tl")
-endif()
-if (MSVC AND VCPKG_TOOLCHAIN)
-  install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/" DESTINATION "${CMAKE_INSTALL_BINDIR}" FILES_MATCHING PATTERN "*.dll")
-endif()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("TdConfigVersion.cmake"
   VERSION "${TDLib_VERSION}"
   COMPATIBILITY ExactVersion
-)
-install(FILES "TdConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/TdConfigVersion.cmake"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Td"
 )
 
 # Add SOVERSION to shared libraries
